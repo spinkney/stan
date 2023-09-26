@@ -77,10 +77,10 @@ void laplace_sample(const Model& model, const Eigen::VectorXd& theta_hat,
   if (refresh > 0) {
     logger.info("Calculating inverse of Cholesky factor");
   }
-  Eigen::MatrixXd L_neg_hessian = (-hessian).llt().matrixL();
-  interrupt();
-  Eigen::MatrixXd inv_sqrt_neg_hessian = L_neg_hessian.inverse().transpose();
-  interrupt();
+  // Eigen::MatrixXd L_neg_hessian = (-hessian).llt().matrixL();
+ // interrupt();
+ // Eigen::MatrixXd inv_sqrt_neg_hessian = L_neg_hessian.inverse().transpose();
+ // interrupt();
   Eigen::MatrixXd half_hessian = 0.5 * hessian;
 
   if (refresh > 0) {
@@ -101,7 +101,8 @@ void laplace_sample(const Model& model, const Eigen::VectorXd& theta_hat,
     for (int n = 0; n < num_unc_params; ++n) {
       z(n) = math::std_normal_rng(rng);
     }
-    Eigen::VectorXd unc_draw = theta_hat + inv_sqrt_neg_hessian * z;
+  //Eigen::VectorXd unc_draw = theta_hat + inv_sqrt_neg_hessian * z;
+    Eigen::VectorXd unc_draw = theta_hat + (-hessian).ldlt.solve(z).transpose();
     std::stringstream write_array_msgs;
     model.write_array(rng, unc_draw, draw_vec, include_tp, include_gq,
                       &write_array_msgs);
